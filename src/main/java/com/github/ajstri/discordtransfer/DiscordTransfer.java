@@ -18,14 +18,14 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 public class DiscordTransfer extends JavaPlugin {
 
-	public Config config;
+	public static Config config;
 	public Bot bot;
 	
 	@Override
 	public void onEnable() {
 		config = new Config(this);
 		
-		/* Start a new Instance for the Bot. */
+		/* Start a new Instance of the Bot. */
 		
 		if (config.isFunctional()) {
 			

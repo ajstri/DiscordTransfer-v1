@@ -46,12 +46,12 @@ public class Config {
 
 	/**
 	 * The Main Configuration Creation
-	 * @param discordTransfer The Plugin
+	 * @param discordTransfer2 The Plugin
 	 */
 	
-	public Config(DiscordTransfer discordTransfer) {
-		this.discordTransfer = discordTransfer;
-		this.dataDir = new File(discordTransfer.getDataFolder().getAbsolutePath().replace("\\", "/") + "/discordcraft");
+	public Config(DiscordTransfer discordTransfer2) {
+		this.discordTransfer = discordTransfer2;
+		this.dataDir = new File(discordTransfer2.getDataFolder().getAbsolutePath().replace("\\", "/") + "/discordcraft");
 		this.configFile = new File(dataDir.getAbsolutePath().replace("\\", "/")+"/config.properties");
 		
 		/* Initialization */
@@ -361,15 +361,6 @@ public class Config {
 		 || (config.getProperty(consoleRoleKey) == null)
 		 || (config.getProperty(messageFormatKey) == null)) {
 			return false;
-		}
-		
-		/* Configuration Value Checks */
-		else if ((config.getProperty(tokenKey) == null)
-		 || (config.getProperty(channelKey) == null)
-		 || (config.getProperty(consoleChannelKey) == null)
-		 || (config.getProperty(consoleRoleKey) == null)
-		 || (config.getProperty(messageFormatKey) == null)) {
-			return false; 
 		}
 		
 		else {
