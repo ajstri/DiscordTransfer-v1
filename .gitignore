@@ -1,0 +1,10 @@
+
+.classpath
+
+.project
+
+*.prefs
+
+*.class
+
+target/classes/plugin.yml
