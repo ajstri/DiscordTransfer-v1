@@ -31,6 +31,10 @@ public class DiscordTransfer extends JavaPlugin {
 			
 			bot = new Bot(this);
 			
+			/* Add Listeners here */
+			
+			
+			
 			try {
 				bot.start(config.getToken());
 				getLogger().info("Successfully enabled.");
@@ -60,4 +64,9 @@ public class DiscordTransfer extends JavaPlugin {
 	public void onDisable() {
 		bot.stop();
 	}
+	
+	public static DiscordTransfer getPlugin() {
+		return getPlugin(DiscordTransfer.class);
+	}
+	
 }

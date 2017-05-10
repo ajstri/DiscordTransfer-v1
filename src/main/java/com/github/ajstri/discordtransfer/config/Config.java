@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -43,6 +44,11 @@ public class Config {
 	private final String consoleRoleValue = "The Role Name/ID that can use Console";
 	private final String messageFormatValue = "%color%%user%:&r %message%";
 
+	/**
+	 * The Main Configuration Creation
+	 * @param discordTransfer The Plugin
+	 */
+	
 	public Config(DiscordTransfer discordTransfer) {
 		this.discordTransfer = discordTransfer;
 		this.dataDir = new File(discordTransfer.getDataFolder().getAbsolutePath().replace("\\", "/") + "/discordcraft");
@@ -50,7 +56,9 @@ public class Config {
 		
 		/* Initialization */
 		
-		if (!dataDir.exists()) dataDir.mkdirs(); // Create the data directory if it does not exist.
+		if (!dataDir.exists()) {
+			dataDir.mkdirs(); // Create the data directory if it does not exist.
+		}
 		
 		if (!configFile.exists()) { 
 			
@@ -119,6 +127,55 @@ public class Config {
 			}
 			
 		}
+	}
+	
+	/**
+	 * Add missing properties and reload the Configuration File.
+	**/
+	
+	public void reload () {
+		
+		/* If a property does not exist, add it */
+		
+		if (config.getProperty(tokenKey) == null) {
+			config.setProperty(tokenKey, tokenValue);
+		} 
+		if (config.getProperty(channelKey) == null) {
+			config.setProperty(channelKey, channelValue);
+		}
+		if (config.getProperty(consoleChannelKey) == null) {
+			config.setProperty(consoleChannelKey, consoleChannelValue);
+		}
+		if (config.getProperty(consoleRoleKey) == null) {
+			config.setProperty(consoleRoleKey, consoleRoleValue);
+		}
+		if (config.getProperty(messageFormatKey) == null) {
+			config.setProperty(messageFormatKey, messageFormatValue);
+		}
+		
+		/* I really am not sure about this one */
+		
+		try {
+			FileOutputStream fos = new FileOutputStream(configFile);
+			config.store(fos, null);
+		}
+		catch (FileNotFoundException fnfe) {
+			fnfe.printStackTrace();
+		}
+		catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		
+		/* Load the Configuration File */
+		
+		try {
+			FileInputStream fis = new FileInputStream(configFile);
+			config.load(fis);
+		}
+		catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		
 	}
 	
 	/** 
@@ -201,9 +258,77 @@ public class Config {
 		
 	}
 	
+	/**
+	 * Retrieve the Roles able to use the Console Channel.
+	 * @return List<Role> with all roles able to use the console.
+	 */
+	
 	public List<Role> getConsoleRoles() {
-		// TODO getConsoleRoles();
-		return null;
+		
+		Guild g = discordTransfer.bot.getGuild();
+		String role = config.getProperty(consoleRoleKey);
+		List<Role> roleList = new ArrayList<Role>();
+		Role r = null;
+		
+		/* Check if a value exists. */
+		
+		if(config.getProperty(consoleRoleKey) != null) {
+			if (config.getProperty(consoleRoleKey) == consoleRoleValue) {
+				return null; // If it is the default value, nothing will come
+			}
+			else {
+				/* "_list" is the defining sequence for if it is more than one role.
+				 * If it does not have it, it is presumably one role. */
+				if (!config.getProperty(consoleRoleKey).contains("_list")) {
+					/* Check to see if the role exists */
+					
+					// Check ID
+					if (g.getRoleById(role) != null) {
+						// Add the role.
+						r = g.getRoleById(role);
+						roleList.add(r);
+					}
+					
+					// Check Name
+					else if (g.getRolesByName(role, false) != null) {
+						// Add the role.
+						r = g.getRolesByName(role, false).get(0);
+						roleList.add(r);
+					}
+					return roleList;
+				}
+			
+				/* If it has "_list", things get complicated. */
+				else if (config.getProperty(consoleRoleKey).contains("_list")) {
+					
+					/* Separate and check each role to see if it exists */
+					
+					role.replace("_list", "").replace(")", "");
+					String[] roleSplit = role.split(", ");
+					
+					// Check each object in the String[]
+					for (String rl : roleSplit) {
+						Role retRole = null;
+						
+						// Check ID
+						if (g.getRoleById(rl) != null) {
+							retRole = g.getRoleById(rl);
+							roleList.add(retRole);
+						}
+						
+						// Check Name
+						else if (g.getRolesByName(rl, false) != null) {
+							retRole = g.getRolesByName(rl, false).get(0);
+							roleList.add(retRole);
+						}
+					}
+				}
+			}
+		}
+		else {
+			return null;
+		}
+		return roleList;
 	}
 	
 	public String getFormat() {
@@ -230,20 +355,26 @@ public class Config {
 		/* If any of these return null, it is not Valid. */
 		
 		/* Configuration Key Checks */
-		if (config.getProperty(tokenKey) == null
-		 || config.getProperty(channelKey) == null
-		 || config.getProperty(consoleChannelKey) == null
-		 || config.getProperty(consoleRoleKey) == null
-		 || config.getProperty(messageFormatKey) == null) return false;
+		if ((config.getProperty(tokenKey) == null)
+		 || (config.getProperty(channelKey) == null)
+		 || (config.getProperty(consoleChannelKey) == null)
+		 || (config.getProperty(consoleRoleKey) == null)
+		 || (config.getProperty(messageFormatKey) == null)) {
+			return false;
+		}
 		
 		/* Configuration Value Checks */
-		if (config.getProperty(tokenValue) == null
-		 || config.getProperty(channelValue) == null
-		 || config.getProperty(consoleChannelValue) == null
-		 || config.getProperty(consoleRoleValue) == null
-		 || config.getProperty(messageFormatValue) == null) return false;
+		else if ((config.getProperty(tokenKey) == null)
+		 || (config.getProperty(channelKey) == null)
+		 || (config.getProperty(consoleChannelKey) == null)
+		 || (config.getProperty(consoleRoleKey) == null)
+		 || (config.getProperty(messageFormatKey) == null)) {
+			return false; 
+		}
 		
-		return true; 
+		else {
+			return true; 
+		}
 		
 	}
 	
