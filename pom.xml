@@ -8,14 +8,14 @@
   
 	<groupId>net.ajstri</groupId>
 	<artifactId>DiscordTransfer</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.4-SNAPSHOT</version>
 	<name>DiscordTransfer</name>
 	<inceptionYear>2017</inceptionYear>
   	<packaging>jar</packaging>
   
   	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>https://github.com/ajstri/DiscordTransfer/issues</url>
+		<url>https://github.com/ajstri/DiscordTransfer-v2/issues</url>
 	</issueManagement>
   
   	<licenses>

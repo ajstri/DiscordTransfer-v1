@@ -10,8 +10,11 @@ import java.util.List;
 import java.util.Properties;
 
 import com.github.ajstri.discordtransfer.DiscordTransfer;
+import com.github.ajstri.discordtransfer.utils.PluginUtils;
 
+import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -28,21 +31,25 @@ public class Config {
 	protected File configFile;
 	protected Properties config;
 	
-		/* Configuration Keys */
+	/* Configuration Keys */
 	
 	private final String tokenKey = "token"; // Token of the Discord Bot
 	private final String channelKey = "channel"; // Channel Name or ID of the Discord Text Channel
 	private final String consoleChannelKey = "console_channel"; // Channel Name of ID of the Discord Text Channel
 	private final String consoleRoleKey = "console_role"; // Role Name or ID that can use the Console Channel
 	private final String messageFormatKey = "format"; // How the message is formatted
+	private final String blockedIdsKey = "blocked_users_id"; // The IDs of the users that cannot relay messages.
+	private final String gameStatusKey = "game_status"; // The game status of the bot.
 		
-		/* Default Values */
+	/* Default Values */
 	
 	private final String tokenValue = "Token Here";
 	private final String channelValue = "Channel Name/ID here";
 	private final String consoleChannelValue = "Channel Name/ID that acts as Console";
 	private final String consoleRoleValue = "The Role Name/ID that can use Console";
 	private final String messageFormatValue = "%color%%user%:&r %message%";
+	private final String blockedIdsValue = "(id, id, etc)";
+	private final String gameStatusValue = "discord bot status";
 
 	/**
 	 * The Main Configuration Creation
@@ -62,16 +69,17 @@ public class Config {
 		
 		if (!configFile.exists()) { 
 			
-		/* Create a New Configuration File if it does not exist */
+			/* Create a New Configuration File if it does not exist */
 			
 			try {
 				configFile.createNewFile();
 			}
 			catch (IOException ioe) {
 				// Ignore this
+				PluginUtils.warning("IOException upon creating the Config File.");
 			}
 			
-		/* Load the Configuration File */
+			/* Load the Configuration File */
 			
 			try {
 				FileInputStream fis = new FileInputStream(configFile);
@@ -79,27 +87,32 @@ public class Config {
 			}
 			catch (FileNotFoundException fnfe) {
 				/* IMPORTANT */
+				PluginUtils.error("Config File not found. Attempting creation");
 				try {
 					configFile.createNewFile();
 				} catch (IOException ioe) {
+					PluginUtils.warning("IOException upon creating the Config File.");
 					ioe.printStackTrace();
 				}
 			}
 			catch (IOException ioe) {
 				/* IMPORTANT */
+				PluginUtils.error("IOException upon loading the Config File.");
 				ioe.printStackTrace();
 			}
 			
-		/* Set the Properties on the Configuration File 
-		   Values are defined/explained above */
+			/* Set the Properties on the Configuration File 
+		  	   Values are defined/explained above */
 			
 			config.setProperty(tokenKey, tokenValue);
 			config.setProperty(channelKey, channelValue);
 			config.setProperty(consoleChannelKey, consoleChannelValue);
 			config.setProperty(consoleRoleKey, consoleRoleValue);
 			config.setProperty(messageFormatKey, messageFormatValue);
+			config.setProperty(blockedIdsKey, blockedIdsValue);
+			config.setProperty(gameStatusKey, gameStatusValue);
 			
-		/* Add the Explanation to the file */
+			/* Add the Explanation to the file */
 			
 			try {
 				FileOutputStream fos = new FileOutputStream(configFile);
@@ -118,11 +131,14 @@ public class Config {
 					  + "For more information, see the instructions on how to set up the DiscordTransfer plugin at: \n"
 					  + "http://github.com/ajstri/discordtransfer/wiki"
 					  + "--- DiscordCraft Configuration ---");
+				// TODO add Blocked IDs to the explanation
 			}
 			catch (FileNotFoundException fnfe) {
+				PluginUtils.error("File not found upon loading the Config File.");
 				fnfe.printStackTrace();
 			}
 			catch (IOException ioe) {
+				PluginUtils.warning("IOException upon loading the Config File.");
 				ioe.printStackTrace();
 			}
 			
@@ -152,6 +168,12 @@ public class Config {
 		if (config.getProperty(messageFormatKey) == null) {
 			config.setProperty(messageFormatKey, messageFormatValue);
 		}
+		if (config.getProperty(blockedIdsKey) == null) {
+			config.setProperty(blockedIdsKey, blockedIdsValue);
+		}
+		if (config.getProperty(gameStatusKey) == null) {
+			config.setProperty(gameStatusKey, gameStatusValue);
+		}
 		
 		/* I really am not sure about this one */
 		
@@ -160,9 +182,11 @@ public class Config {
 			config.store(fos, null);
 		}
 		catch (FileNotFoundException fnfe) {
+			PluginUtils.error("File not found upon loading the Config File.");
 			fnfe.printStackTrace();
 		}
 		catch (IOException ioe) {
+			PluginUtils.error("IOException upon loading the Config File.");
 			ioe.printStackTrace();
 		}
 		
@@ -173,6 +197,7 @@ public class Config {
 			config.load(fis);
 		}
 		catch (IOException ioe) {
+			PluginUtils.error("IOException upon loading the Config File.");
 			ioe.printStackTrace();
 		}
 		
@@ -303,7 +328,7 @@ public class Config {
 					
 					/* Separate and check each role to see if it exists */
 					
-					role.replace("_list", "").replace(")", "");
+					role.replace("_list(", "").replace(")", "");
 					String[] roleSplit = role.split(", ");
 					
 					// Check each object in the String[]
@@ -321,6 +346,7 @@ public class Config {
 							retRole = g.getRolesByName(rl, false).get(0);
 							roleList.add(retRole);
 						}
+						return roleList;
 					}
 				}
 			}
@@ -328,7 +354,7 @@ public class Config {
 		else {
 			return null;
 		}
-		return roleList;
+		return null;
 	}
 	
 	public String getFormat() {
@@ -342,6 +368,47 @@ public class Config {
 			return null;
 		}
 		
+	}
+	
+	/**
+	 * Retrieve the Blocked IDs
+	 * @return List<String> of the IDs that are blocked
+	**/
+	
+	public List<String> getBlockedIDs() {
+		
+		Guild g = discordTransfer.bot.getGuild();
+		List<String> guildIDs = new ArrayList<>();
+		String origIDs = config.getProperty(blockedIdsKey);
+		String[] IDSplit;
+		List<String> returnIDs = new ArrayList<>();
+		
+		/* Get the IDs from the Guild */
+		for (Member m : g.getMembers()) {
+			String a = m.getUser().getId();
+			guildIDs.add(a);
+		}
+		
+		origIDs.replace("(", "").replace(")", "");
+		IDSplit = origIDs.split(", ");
+		
+		for (String s : IDSplit) {
+			for (String ss : guildIDs) {
+				if (s == ss) {
+					returnIDs.add(s);
+				}
+			}
+		}
+		
+		return returnIDs;
+	}
+	
+	public Game getGameStatus() {
+		
+		Game g;
+		g = config.getProperty(gameStatusKey);
+		
+		return g;
 	}
 	
 	/** 

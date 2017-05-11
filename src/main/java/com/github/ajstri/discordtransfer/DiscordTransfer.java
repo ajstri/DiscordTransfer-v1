@@ -6,6 +6,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.ajstri.discordtransfer.config.Config;
 import com.github.ajstri.discordtransfer.discord.Bot;
+import com.github.ajstri.discordtransfer.listeners.ConsoleChannelListener;
+import com.github.ajstri.discordtransfer.listeners.MainChannelListener;
+import com.github.ajstri.discordtransfer.utils.PluginUtils;
 
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
@@ -31,18 +34,28 @@ public class DiscordTransfer extends JavaPlugin {
 			
 			bot = new Bot(this);
 			
-			/* Add Listeners here */
-			
-			
+			/* We don't need more than one instance. 
+			 * If it gets reloaded, or something happens that we 
+			 * have the instance before startup, we'll shut it down. */
+			if (bot.jda != null) {
+				try {
+					bot.stop();
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 			
 			try {
 				bot.start(config.getToken());
 				getLogger().info("Successfully enabled.");
 			}
 			catch(LoginException e) {
+				PluginUtils.error("Failed to Connect to Discord");
 				e.printStackTrace();
 			} 
 			catch(IllegalArgumentException e) {
+				PluginUtils.error("Arguments are not valid");
 				e.printStackTrace();
 			} 
 			catch(InterruptedException e) {
@@ -53,7 +66,20 @@ public class DiscordTransfer extends JavaPlugin {
 			}
 		}
 		else {
-			getLogger().severe("Configuration File is not functional");
+			PluginUtils.error("Configuration File is not functional");
+		}
+		
+		// Set game status
+		bot.jda
+		
+		/* Add Listeners here */
+		
+		bot.jda.addEventListener(new ConsoleChannelListener());
+		bot.jda.addEventListener(new MainChannelListener());
+		
+		/* What happens if the bot isn't in any guilds? */
+		if(bot.getGuilds().size() == 0) {
+			PluginUtils.error("Bot is not in any servers.");
 		}
 	}
 	
@@ -62,6 +88,7 @@ public class DiscordTransfer extends JavaPlugin {
 	}
 	
 	public void onDisable() {
+		// TODO send message "Server offline"
 		bot.stop();
 	}
 	

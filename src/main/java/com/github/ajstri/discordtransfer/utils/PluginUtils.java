@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.github.ajstri.discordtransfer.DiscordTransfer;
+
 /**
  * The PluginUtils class for Discord Transfer
  * @author AJStri
@@ -26,4 +28,41 @@ public class PluginUtils {
 		}
 		return null;
 	}
+	
+	/**
+	 * 
+	 * @param message
+	**/
+	
+	public static void debug(String message) {
+		DiscordTransfer.getPlugin().getLogger().info("[DEBUG] " + message);
+	}
+	
+	/**
+	 * Print an info log.
+	 * @param message to send to console
+	**/
+	
+	public static void info(String message) {
+		DiscordTransfer.getPlugin().getLogger().info(message);
+	}
+	
+	/**
+	 * Print a warning log.
+	 * @param message to send to console
+	**/
+	
+	public static void warning(String message) {
+		DiscordTransfer.getPlugin().getLogger().warning(message);
+	}
+	
+	/**
+	 * Print an error log.
+	 * @param message to send to console
+	**/
+	
+	public static void error(String message) {
+		DiscordTransfer.getPlugin().getLogger().severe(message);
+	}
+	
 }

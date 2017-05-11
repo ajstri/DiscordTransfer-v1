@@ -1,5 +1,7 @@
 package com.github.ajstri.discordtransfer.discord;
 
+import java.util.List;
+
 import javax.security.auth.login.LoginException;
 
 import com.github.ajstri.discordtransfer.DiscordTransfer;
@@ -11,7 +13,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 /**
- * The Bot Class of DiscordTransfer
+ * The Bot Class of Discord Transfer
  * @author AJStri
  * @since May 9th, 2017
 **/
@@ -74,8 +76,22 @@ public class Bot {
 		return jda.getSelfUser().getId();
 	}
 	
-	public Guild getGuild () {
+	/**
+	 * Return a single guild the bot is in.
+	 * @return
+	**/
+	
+	public Guild getGuild() {
 		return jda.getGuilds().get(0);
+	}
+	
+	/**
+	 * Get all the guilds the Discord bot is in.
+	 * @return
+	**/
+	
+	public List<Guild> getGuilds() {
+		return jda.getGuilds();
 	}
 	
 }
