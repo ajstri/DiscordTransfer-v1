@@ -5,10 +5,12 @@ import java.util.List;
 import javax.security.auth.login.LoginException;
 
 import com.github.ajstri.discordtransfer.DiscordTransfer;
+import com.github.ajstri.discordtransfer.utils.PluginUtils;
 
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
@@ -92,6 +94,27 @@ public class Bot {
 	
 	public List<Guild> getGuilds() {
 		return jda.getGuilds();
+	}
+	
+	public void setGameStatus(String gameStatus) {
+		if (getJDA() == null) {
+			PluginUtils.debug("Tried to set Game of Bot with a null JDA.");
+		}
+		else if (gameStatus == null) {
+			PluginUtils.debug("Tried to set Game of Bot to a null token.");
+		}
+		else {
+			getJDA().getPresence().setGame(Game.of(gameStatus));
+		}
+	}
+	
+	public boolean isInGuild() {
+		if(getJDA().getGuilds().size() == 0) {
+			return false;
+		}
+		else {
+			return true; // TODO don't make stupid typos
+		}
 	}
 	
 }

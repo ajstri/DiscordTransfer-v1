@@ -12,7 +12,6 @@ import java.util.Properties;
 import com.github.ajstri.discordtransfer.DiscordTransfer;
 import com.github.ajstri.discordtransfer.utils.PluginUtils;
 
-import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
@@ -40,6 +39,7 @@ public class Config {
 	private final String messageFormatKey = "format"; // How the message is formatted
 	private final String blockedIdsKey = "blocked_users_id"; // The IDs of the users that cannot relay messages.
 	private final String gameStatusKey = "game_status"; // The game status of the bot.
+	private final String grematKey = "gremat";
 		
 	/* Default Values */
 	
@@ -50,6 +50,7 @@ public class Config {
 	private final String messageFormatValue = "%color%%user%:&r %message%";
 	private final String blockedIdsValue = "(id, id, etc)";
 	private final String gameStatusValue = "discord bot status";
+	private final String grematValue = "true or false";
 
 	/**
 	 * The Main Configuration Creation
@@ -111,6 +112,7 @@ public class Config {
 			config.setProperty(messageFormatKey, messageFormatValue);
 			config.setProperty(blockedIdsKey, blockedIdsValue);
 			config.setProperty(gameStatusKey, gameStatusValue);
+			config.setProperty(grematKey, grematValue);
 			
 			/* Add the Explanation to the file */
 			
@@ -173,6 +175,9 @@ public class Config {
 		}
 		if (config.getProperty(gameStatusKey) == null) {
 			config.setProperty(gameStatusKey, gameStatusValue);
+		}
+		if (config.getProperty(grematKey) == null) {
+			config.setProperty(grematKey, grematValue);
 		}
 		
 		/* I really am not sure about this one */
@@ -280,7 +285,6 @@ public class Config {
 		else {
 			return null;
 		}
-		
 	}
 	
 	/**
@@ -403,12 +407,33 @@ public class Config {
 		return returnIDs;
 	}
 	
-	public Game getGameStatus() {
+	public String getGameStatus() {
 		
-		Game g;
-		g = config.getProperty(gameStatusKey);
+		String g = config.getProperty(gameStatusKey);
 		
 		return g;
+	}
+	
+	/** 
+	 * 
+	 * @return true if enabled, false if disabled
+	**/
+	
+	public boolean getGremat() {
+		if (config.getProperty(grematKey) == null) {
+			return false;
+		}
+		else {
+			if (config.getProperty(grematKey) == "true") {
+				return true;
+			}
+			else if (config.getProperty(grematKey) == "false") {
+				return false;
+			}
+			else {
+				return false;
+			}
+		}
 	}
 	
 	/** 

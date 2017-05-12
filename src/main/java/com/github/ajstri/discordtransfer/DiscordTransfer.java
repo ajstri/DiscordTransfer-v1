@@ -6,8 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.ajstri.discordtransfer.config.Config;
 import com.github.ajstri.discordtransfer.discord.Bot;
-import com.github.ajstri.discordtransfer.listeners.ConsoleChannelListener;
-import com.github.ajstri.discordtransfer.listeners.MainChannelListener;
+import com.github.ajstri.discordtransfer.listeners.*;
 import com.github.ajstri.discordtransfer.utils.PluginUtils;
 
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
@@ -70,21 +69,25 @@ public class DiscordTransfer extends JavaPlugin {
 		}
 		
 		// Set game status
-		bot.jda
+		bot.setGameStatus(config.getGameStatus());
 		
+		/* What happens if the bot isn't in any guilds? */
+		if(!bot.isInGuild()) {
+			PluginUtils.error("Bot is not in any servers.");
+		}
+			
 		/* Add Listeners here */
 		
+		// Discord Listeners
 		bot.jda.addEventListener(new ConsoleChannelListener());
 		bot.jda.addEventListener(new MainChannelListener());
 		
-		/* What happens if the bot isn't in any guilds? */
-		if(bot.getGuilds().size() == 0) {
-			PluginUtils.error("Bot is not in any servers.");
-		}
-	}
-	
-	public void onLoad() {
+		// Minecraft Listeners
 		
+		getServer().getPluginManager().registerEvents(new PlayerJoinLeaveListener(), this);
+		// getServer().getPluginManager().registerEvents(new ClassName, this);
+		
+
 	}
 	
 	public void onDisable() {
