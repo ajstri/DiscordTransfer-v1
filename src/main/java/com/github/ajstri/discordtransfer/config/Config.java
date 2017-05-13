@@ -40,6 +40,9 @@ public class Config {
 	private final String blockedIdsKey = "blocked_users_id"; // The IDs of the users that cannot relay messages.
 	private final String gameStatusKey = "game_status"; // The game status of the bot.
 	private final String grematKey = "gremat";
+	private final String essentialsKey = "enable_essentials";
+	
+	// TODO : Add towny_chat
 		
 	/* Default Values */
 	
@@ -51,6 +54,7 @@ public class Config {
 	private final String blockedIdsValue = "(id, id, etc)";
 	private final String gameStatusValue = "discord bot status";
 	private final String grematValue = "true or false";
+	private final String essentialsValue = "true or false";
 
 	/**
 	 * The Main Configuration Creation
@@ -113,6 +117,7 @@ public class Config {
 			config.setProperty(blockedIdsKey, blockedIdsValue);
 			config.setProperty(gameStatusKey, gameStatusValue);
 			config.setProperty(grematKey, grematValue);
+			config.setProperty(essentialsKey, essentialsValue);
 			
 			/* Add the Explanation to the file */
 			
@@ -178,6 +183,9 @@ public class Config {
 		}
 		if (config.getProperty(grematKey) == null) {
 			config.setProperty(grematKey, grematValue);
+		}
+		if(config.getProperty(essentialsKey, essentialsValue) == null) {
+			config.setProperty(essentialsKey, essentialsValue);
 		}
 		
 		/* I really am not sure about this one */
@@ -412,6 +420,27 @@ public class Config {
 		String g = config.getProperty(gameStatusKey);
 		
 		return g;
+	}
+	
+	/**
+	 * Return if Essentials is enabled.
+	 * @return true if Essentials is enabled, false if not
+	**/
+	
+	public boolean getEssentials() {
+		if (config.getProperty(essentialsKey) == null) {
+			return false;
+		}
+		else if(config.getProperty(essentialsKey) == "true") {
+			return true;
+		}
+		else if(config.getProperty(essentialsKey) == "false") {
+			return false;
+		}
+		else {
+			return false;
+		}
+		
 	}
 	
 	/** 
