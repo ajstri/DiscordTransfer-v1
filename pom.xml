@@ -55,18 +55,24 @@
 		<!-- Spigot / Bukkit I guess -->
 		
 		<repository>
-        	<id>bukkit-repo</id>
-        	<url>http://repo.bukkit.org/content/groups/public/</url>
+        		<id>bukkit-repo</id>
+        		<url>http://repo.bukkit.org/content/groups/public/</url>
 		</repository>
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
+        	<repository>
+            		<id>spigot-repo</id>
+            		<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        	</repository>
         
-        <repository>
-            <id>jcenter</id>
-            <url>http://jcenter.bintray.com</url>
-        </repository>
+        	<repository>
+            		<id>jcenter</id>
+            		<url>http://jcenter.bintray.com</url>
+        	</repository>
+		
+		<!-- Vault -->
+		<repository>
+            		<id>vault-repo</id>
+           		<url>http://nexus.hc.to/content/repositories/pub_releases</url>
+        	</repository>
         
 	</repositories>
 	
@@ -87,6 +93,40 @@
 			<artifactId>JDA</artifactId>
 			<version>3.0.0_181</version>
 		</dependency>
+		
+		<!-- We can use external plugins as dependencies to make lots of stuff easy. -->
+		
+		<dependency>
+            		<groupId>com.gmail.nossr50</groupId>
+            		<artifactId>mcmmo</artifactId>
+            		<version>1.5.07</version>
+            		<scope>provided</scope>
+        	</dependency>
+		
+		<!-- Multiverse -->
+		<dependency>
+            		<groupId>com.onarandombox.MultiverseCore</groupId>
+            		<artifactId>Multiverse-Core</artifactId>
+            		<version>2.4</version>
+            		<scope>provided</scope>
+        	</dependency>
+		
+		<!-- TownyChat -->
+		<dependency>
+            		<groupId>com.palmergames.bukkit</groupId>
+            		<artifactId>TownyChat</artifactId>
+            		<version>0.45</version>
+            		<scope>provided</scope>
+        	</dependency>
+		
+		<!-- Vault-->
+		<dependency>
+            		<groupId>net.milkbowl.vault</groupId>
+            		<artifactId>VaultAPI</artifactId>
+            		<version>1.6</version>
+            		<scope>provided</scope>
+        	</dependency>
+		
 	</dependencies>
 
 </project>
