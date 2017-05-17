@@ -431,10 +431,10 @@ public class Config {
 		if (config.getProperty(essentialsKey) == null) {
 			return false;
 		}
-		else if(config.getProperty(essentialsKey) == "true") {
+		else if(config.getProperty(essentialsKey).equalsIgnoreCase("true")) {
 			return true;
 		}
-		else if(config.getProperty(essentialsKey) == "false") {
+		else if(config.getProperty(essentialsKey).equalsIgnoreCase("false")) {
 			return false;
 		}
 		else {
@@ -453,10 +453,10 @@ public class Config {
 			return false;
 		}
 		else {
-			if (config.getProperty(grematKey) == "true") {
+			if (config.getProperty(grematKey).equalsIgnoreCase("true")) {
 				return true;
 			}
-			else if (config.getProperty(grematKey) == "false") {
+			else if (config.getProperty(grematKey).equalsIgnoreCase("false")) {
 				return false;
 			}
 			else {
